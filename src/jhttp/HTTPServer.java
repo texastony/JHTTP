@@ -8,9 +8,7 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Scanner;
-import jhttp.HTTPClient;
 
 /*
  * Authors: Tony Knapp, Teagan Atwater, Jake Junda
@@ -21,13 +19,18 @@ import jhttp.HTTPClient;
  */
 public class HTTPServer extends Thread {
 	static int PORT;
-	private ArrayList<HTTPClient> activeClients;
+	private ArrayList<HTTPClient> activeClients = new ArrayList<HTTPClient>();
 	private ServerSocket incoming; // Socket that the server listens to
 	private File log = new File("log.txt");
-	private File directory;
 	private PrintWriter out;
 	private boolean running = true;
 	private int USER_LIMIT = 100;
+	File directory;
+	int requestCnt = 0;
+	/**
+	 * version: {major, minor}
+	 */
+	int[] version = {1, 1};
 
 	/**
 	 * Create new instance of HTTPServer
@@ -66,7 +69,9 @@ public class HTTPServer extends Thread {
 	public static void main(String[] args) throws Exception {
 		boolean portProvided = false;
 		int tempPort = 80;
-		String tempDir = "C://";
+//		String tempDir = "C://"; //Windows
+		//TODO Tatwater, did you test this since you modified it? It's not working for Tony...
+		String tempDir = "/"; //Linux
 		Scanner in = new Scanner(System.in);
 		String text;
 		if (args.length > 0) {
@@ -126,10 +131,10 @@ public class HTTPServer extends Thread {
 		try {
 			while (running) {
 				Socket clientSoc = incoming.accept(); // Wait for new connection
-				HTTPClient clientInst = new HTTPClient(clientSoc, this, this.directory); // Create new session on socket
-				
+				HTTPClient clientInst = new HTTPClient(clientSoc, this, this.directory, this.requestCnt); // Create new session on socket
+				requestCnt++;
 				if (activeClients.size() > USER_LIMIT){
-					clientInst.shutThingsDown(2);
+					clientInst.shutThingsDown(0);
 				}
 				else {
 					activeClients.add(clientInst); // Store new client session
@@ -152,7 +157,7 @@ public class HTTPServer extends Thread {
 	private boolean stopServer() throws IOException {
 		this.running = false;
 		for (HTTPClient client : this.activeClients) {
-			while (!client.shutThingsDown(1)); // Wait for the client to shut down before proceeding
+			while (!client.shutThingsDown(0)); // Wait for the client to shut down before proceeding
 		}
 		out.close();
 		System.out.println("All client sessions have been shut down.\rStopping server.");
