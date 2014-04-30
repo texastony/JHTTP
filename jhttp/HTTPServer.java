@@ -157,7 +157,7 @@ public class HTTPServer extends Thread {
 		out.close();
 		System.out.println("All client sessions have been shut down.\rStopping server.");
 		try {
-			this.join(100); // Let the thread die
+			this.join(100); // Let the thread die -> xp 
 		}
 		catch (InterruptedException e) {
 			e.printStackTrace();

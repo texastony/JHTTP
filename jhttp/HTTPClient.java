@@ -12,7 +12,9 @@ import java.util.Date;
  * Authors: Tony Knapp, Teagan Atwater, Jake Junda
  * Started: April 28, 2014
  * Project: A simple HTTP server Client
- * Description: This HTTP server Client...
+ * Description: This HTTP server Client handles an instance of the each client
+ * that connects to the server.  It handles the return codes that let the user
+ * know the result of thier commands.  
  */
 
 public class HTTPClient extends Thread {
@@ -46,9 +48,9 @@ public class HTTPClient extends Thread {
 	public void run() {
     int method = 0; //1 get, 2 head, 0 not supported
     String http = new String(); //a bunch of strings to hold
-    String path = new String(); //the various things, what http v, what path,
-    String file = new String(); //what file
-    String user_agent = new String(); //what user_agent
+    String path = new String(); //holds the http version, and path,
+    String file = new String(); //hold the filename
+    String user_agent = new String(); //user_agent
     try {
       //This is the two types of request we can handle
       //GET /index.html HTTP/1.0
@@ -56,12 +58,12 @@ public class HTTPClient extends Thread {
       String tmp = controlIn.readLine(); //read from the stream
       String tmp2 = new String(tmp);
       tmp.toUpperCase(); //convert it to uppercase
-      if (tmp.startsWith("GET")) { //compare it is it GET
+      if (tmp.startsWith("GET")) { //if tmp equals GET, set to method 1
         method = 1;
-      } //if we set it to method 1
-      if (tmp.startsWith("HEAD")) { //same here is it HEAD
+      }
+      if (tmp.startsWith("HEAD")) { //if tmp equals HEAD, set to method 2
         method = 2;
-      } //set method to 2
+      } 
 
       if (method == 0) { // not supported
         try {
@@ -69,17 +71,17 @@ public class HTTPClient extends Thread {
         	controlOut.close();
           return;
         }
-        catch (Exception e3) { //if some error happened catch it
-          s("error:" + e3.getMessage());
-        } //and display error
+        catch (Exception e3) { //notify user of an error
+        	System.out.println("error:" + e3.getMessage());
+        }
       }
       //}
 
       //tmp contains "GET /index.html HTTP/1.0 ......."
       //find first space
       //find next space
-      //copy whats between minus slash, then you get "index.html"
-      //it's a bit of dirty code, but bear with me...
+      //copy whats between minus slash, then you get "index.html"???
+      //it's a bit of dirty code, but bear with me...???
       int start = 0;
       int end = 0;
       for (int a = 0; a < tmp2.length(); a++) {
@@ -94,10 +96,10 @@ public class HTTPClient extends Thread {
       path = tmp2.substring(start + 2, end); //fill in the path
     }
     catch (Exception e) {
-      s("errorr" + e.getMessage());
-    } //catch any exception
+    	System.out.println("error" + e.getMessage());
+    }
 
-    //path do now have the filename to what to the file it wants to open
+    //retrieve the path to the filename of file to be downloaded
     s("\nClient requested:" + new File(path).getAbsolutePath() + "\n");
     FileInputStream requestedfile = null;
 
@@ -109,20 +111,20 @@ public class HTTPClient extends Thread {
       //you can do this by passing "../" in the url or specify absoulute path
       //or change drive (win)
 
-      //try to open the file,
+      //open the file
       requestedfile = new FileInputStream(path);
     }
     catch (Exception e) {
       try {
-        //if you could not open the file send a 404
+        //if file open fails send the infamous 404 Not Found
         output.writeBytes(construct_http_header(404, 0));
         //close the stream
         output.close();
       }
       catch (Exception e2) {}
       ;
-      s("error" + e.getMessage());
-    } //print error to gui
+      System.out.println("error" + e.getMessage());
+    }
 
     //happy day scenario
     try {
@@ -138,15 +140,14 @@ public class HTTPClient extends Thread {
       }
       if (path.endsWith(".gif")) {
         type_is = 2;
-        //write out the header, 200 ->everything is ok we are all happy.
       }
-      output.writeBytes(construct_http_header(200, 5));
+      output.writeBytes(construct_http_header(200, 5)); //it checks out, send 200 OK
 
       //if it was a HEAD request, we don't print any BODY
       if (method == 1) { //1 is GET 2 is head and skips the body
         while (true) {
           //read the file from filestream, and print out through the
-          //client-outputstream on a byte per byte base.
+          //client-outputstream on a byte per byte basis.
           int b = requestedfile.read();
           if (b == -1) {
             break; //end of file
@@ -155,7 +156,7 @@ public class HTTPClient extends Thread {
         }
         
       }
-//clean up the files, close open handles
+      //clean up the files, close open handles
       output.close();
       requestedfile.close();
     }
@@ -210,7 +211,7 @@ public class HTTPClient extends Thread {
 	 * what kind of file is being sent
 	 */	
     switch (file_type) {
-      //plenty of types for you to fill in
+      //WE CAN EITHER FILL IN A BUNCH MORE FILE TYPES OR DO IT PETER'S "LET THE BROWSER HANDLE IT" WAY
       case 0:
         break;
       case 1:
@@ -227,8 +228,7 @@ public class HTTPClient extends Thread {
 
     s = s + "\r\n"; //this marks the end of the httpheader
     //and the start of the body
-    //ok return our newly created header!
-    return s;
+    return s;//return the header
   }
 
 }
