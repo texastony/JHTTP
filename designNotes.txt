@@ -4,12 +4,20 @@ What does an HTTP server do?
 	It takes requests, and replies to them with both (data?) and status replies.
 
 What does it need to know from a request to reply?
+	It needs to know what file they are requesting and where to reply to
 
 What status codes MUST our server handle?
-
+	400 Bad_request, 200 OK, 403 FORBIDDEN, 404 NOT_FOUND
+	
 What header tokens MUST our server handle?
+	
 
 What header tokens MUST our server reply to?
+
+Use different username and password for browser and ftp
+	browser user name and password are logged and ftp pass and user are not logged
+	
+
 
 ===============================================================================================
 
@@ -55,8 +63,5 @@ http_URL = "http:" "//" host [ ":" port ] [ abs_path [ "?" query ]]
 	URI notes: MUST be case-insensitive. An empty abs_path is equivalent to an abs_path of "/".
 	
 ===============================================================================================
-What we need to do:
-	We are going to need Main
-	
-	
+Wha
 	
