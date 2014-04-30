@@ -3,8 +3,10 @@ package jhttp;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.Inet4Address;
 import java.net.Socket;
 import java.util.Date;
 
@@ -26,6 +28,8 @@ public class HTTPClient extends Thread {
 	boolean running = true;
 	boolean dataConnection = false;
 	boolean isSending = false;	
+	private int[] curVersion;
+	private Inet4Address clAddr;
 	
 	/**This constructs a Thread that
 	 * handles the client's connections. 
@@ -40,7 +44,6 @@ public class HTTPClient extends Thread {
 		this.controlOut = new DataOutputStream(controlSoc.getOutputStream());
 		this.server = server;
 		this.parentDir = parentFolder;
-		System.out.println("A new guest has Conncected\rAwaiting Username and Password");
 	}
 	
 	public void run() {
@@ -51,17 +54,21 @@ public class HTTPClient extends Thread {
     String user_agent = new String(); //what user_agent
     try {
       //This is the two types of request we can handle
-      //GET /index.html HTTP/1.0
-      //HEAD /index.html HTTP/1.0
-      String tmp = controlIn.readLine(); //read from the stream
-      String tmp2 = new String(tmp);
-      tmp.toUpperCase(); //convert it to uppercase
-      if (tmp.startsWith("GET")) { //compare it is it GET
+      //GET /index.html HTTP/1.1
+      //HEAD /index.html HTTP/1.1
+    	/**
+    	 * Array of the inputs
+    	 */
+      String[] msgInput = controlIn.readLine().split("\r\n"); //read from the stream
+      msgInput[0].toUpperCase(); //convert it to uppercase
+      if (msgInput[0].equalsIgnoreCase("GET")) { 
+      	//TODO create GET method
         method = 1;
-      } //if we set it to method 1
-      if (tmp.startsWith("HEAD")) { //same here is it HEAD
+      }
+      if (tmp.startsWith("HEAD")) { 
+      	//TODO create HEAD method
         method = 2;
-      } //set method to 2
+      } 
 
       if (method == 0) { // not supported
         try {

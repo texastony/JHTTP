@@ -24,9 +24,13 @@ public class HTTPServer extends Thread {
 	private ArrayList<HTTPClient> activeClients;
 	private ServerSocket incoming; // Socket that the server listens to
 	private File log = new File("log.txt");
-	private File directory;
+	File directory;
+	/**
+	 * version = {major, minor}
+	 */
+	int[] version = {1, 1};	
 	private PrintWriter out;
-	private boolean running = true;
+	boolean running = true;
 	private int USER_LIMIT = 100;
 
 	/**
