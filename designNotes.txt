@@ -1,0 +1,67 @@
+QUESTIONS:
+
+What does an HTTP server do?
+	It takes requests, and replies to them with both (data?) and status replies.
+
+What does it need to know from a request to reply?
+	It needs to know what file they are requesting and where to reply to
+
+What status codes MUST our server handle?
+	400 Bad_request, 200 OK, 403 FORBIDDEN, 404 NOT_FOUND
+	
+What header tokens MUST our server handle?
+	
+
+What header tokens MUST our server reply to?
+
+Use different username and password for browser and ftp
+	browser user name and password are logged and ftp pass and user are not logged
+	
+
+
+===============================================================================================
+
+TCP Connection Setup:
+Client:_X -> Server:80 SYN
+Server:80 -> Client:_X SYN/ACK
+Client:_Y -> Server:80 ACK
+
+Request Page:
+Client:_Z -> Server:80 GET
+{TCP "segment of a reassembled PDU," ACK, SYNs, SYN/ACKs, ACKs}
+Server:80 -> Client:_Z 304 Not Modified
+{TCP ACK, FIN/ACKs, ACKs}
+
+Request Assets:
+Client:_A -> Server:80 GET
+Server:80 -> Client:_A 404 Not Found
+{TCP ACKs, FIN/ACKs, SYNs, SYN/ACKs}
+Client:_B -> Server:80 GET
+{TCP "segment of a reassembled PDU"}
+Client:_C -> Server:80 GET
+Client:_D -> Server:80 GET
+Client:_E -> Server:80 GET
+{TCP "segment of a reassembled PDU"}
+{TCP "segment of a reassembled PDU"}
+Client:_F -> Server:80 GET
+{TCP "segment of a reassembled PDU"}
+{TCP "segment of a reassembled PDU"}
+...
+
+It appears that the ACK, FIN/ACK, etc is not a fundamental part of the file transfer part. We
+should just look at the GETs and then send the file as soon as we can, in request order (queue
+the requests and send one-by-one). Each file transfer (either page or asset) is going to be
+on its own port, so the server probably needs to look at the port from which came the request
+and send the file to that port.
+
+===============================================================================================
+NOTES FROM RFC READING:
+
+HTTP-Version   = "HTTP" "/" 1*DIGIT "." 1*DIGIT
+
+http_URL = "http:" "//" host [ ":" port ] [ abs_path [ "?" query ]]
+	URI notes: MUST be case-insensitive. An empty abs_path is equivalent to an abs_path of "/".
+	
+===============================================================================================
+Wha
+	
