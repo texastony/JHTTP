@@ -54,26 +54,26 @@ public class HTTPClient extends Thread {
 	
 	public void run() { 
 		try {
-	  	String tmp = controlIn.readLine();
-	  	while (!tmp.isEmpty()){
-	  		System.out.println(this.requestNum + "IN: " + tmp);
-	  		this.input.add(tmp);	  		
-				tmp = controlIn.readLine();
-  		}
-	    if (this.input.get(0).startsWith("GET")) { //if tmp equals GET, set to method 1
-	      get();
-//      	controlOut.writeBytes(construct_http_header(501, 0));
-	    }
-	    else if (this.input.get(0).startsWith("HEAD")) { //if tmp equals HEAD, set to method 2
-	      head();
-//      	controlOut.writeBytes(construct_http_header(501, 0));
-	    } 
-	    else { // not supported
-      	controlOut.writeBytes(construct_http_header(501, 0));
-      	controlOut.close();
-        return;
-	    }
-	    shutThingsDown(0);
+    	  	String tmp = controlIn.readLine();
+    	  	while (!tmp.isEmpty()){
+    	  		System.out.println(this.requestNum + "IN: " + tmp);
+    	  		this.input.add(tmp);	  		
+    				tmp = controlIn.readLine();
+      		}
+    	    if (this.input.get(0).startsWith("GET")) { //if tmp equals GET, set to method 1
+    	      get();
+    //      	controlOut.writeBytes(construct_http_header(501, 0));
+    	    }
+    	    else if (this.input.get(0).startsWith("HEAD")) { //if tmp equals HEAD, set to method 2
+    	      head();
+    //      	controlOut.writeBytes(construct_http_header(501, 0));
+    	    } 
+    	    else { // not supported
+          	controlOut.writeBytes(construct_http_header(501, 0));
+          	controlOut.close();
+            return;
+    	    }
+    	    shutThingsDown(0);
 		} 
 		catch (Exception e3) { //notify user of an error
 			e3.printStackTrace();
@@ -172,6 +172,23 @@ public class HTTPClient extends Thread {
 	  	controlOut.writeBytes(construct_http_header(200, type_is));
     }
 	}
+
+  /**
+   * Handle form submission using method="POST"
+   * 
+   * @author Teagan Atwater
+   * @since Alpha
+   */
+  private void post() throws IOException {
+    //Resource created on server:
+    //201 Created
+    //Result in no resource that can be identified:
+    //200 OK - includes entity that describes result
+    //204 No Content - doesn't include entity that describes result
+
+    //Need Cache-Control and Expires header files
+    //303 See Other - direct to retrieve cacheable resource
+  }
 	
 	
 	//

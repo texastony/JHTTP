@@ -41,7 +41,7 @@ public class HTTPServer extends Thread {
 	 */
 	public HTTPServer(int newPort, String directoryPath) throws IOException {
 		this.activeClients = new ArrayList<HTTPClient>();
-		HTTPServer.PORT = newPort;
+		PORT = newPort;
 		this.directory = new File(directoryPath);
 		if (!this.directory.isDirectory()) {
 			this.directory.mkdir();
@@ -67,10 +67,19 @@ public class HTTPServer extends Thread {
 	public static void main(String[] args) throws Exception {
 		boolean portProvided = false;
 		int tempPort = 80;
-//		String tempDir = "C://"; //Windows
-		//TODO Tatwater, did you test this since you modified it? It's not working for Tony...
-		String tempDir = "/"; //Linux
 		Scanner in = new Scanner(System.in);
+		String tempDir = "";
+		boolean selectOS = false;
+		while(!selectOS) {
+			System.out.println("Please select your OS:\n0. Linux/OSX\n1. Windows");
+			String os = in.nextLine();
+			if (os == "0")
+				tempDir = "/";
+			else if (os == "1")
+				tempDir = "C://"; // Check this on Windows to be sure it works
+			else
+				System.out.println("Invalid selection.");
+		}
 		String text;
 		if (args.length > 0) {
 			for (int i = 0; i < args.length; i++) {
@@ -106,7 +115,7 @@ public class HTTPServer extends Thread {
 		text = in.nextLine(); // Wait for user input
 		while (text != null && !text.trim().equalsIgnoreCase("QUIT")) { // Loop until the user types QUIT
 			if (text.trim().equalsIgnoreCase("PORT")) {
-				System.out.println("The port number you should connect to is " + HTTPServer.PORT);
+				System.out.println("The port number you should connect to is " + PORT);
 			}
 			text = in.nextLine(); // Wait for user input
 		}
@@ -158,7 +167,7 @@ public class HTTPServer extends Thread {
 			while (!client.shutThingsDown(0)); // Wait for the client to shut down before proceeding
 		}
 		out.close();
-		System.out.println("All client sessions have been shut down.\rStopping server.");
+		System.out.println("All client sessions have been terminated.\rStopping server.");
 		try {
 			this.join(100); // Let the thread die -> xp 
 		}
