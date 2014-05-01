@@ -5,14 +5,15 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.Inet4Address;
 import java.net.Socket;
 import java.util.Date;
 
 /*
  * Authors: Tony Knapp, Teagan Atwater, Jake Junda
- * Started: April 28, 2014
- * Project: A simple HTTP server Client
- * Description: This HTTP server Client...
+ * Started: April 28, 2014 (Alpha)
+ * Project: A simple HTTP client
+ * Description: This HTTP client handles all commands and interaction between server and client.
  */
 
 public class HTTPClient extends Thread {
@@ -26,42 +27,52 @@ public class HTTPClient extends Thread {
 	boolean running = true;
 	boolean dataConnection = false;
 	boolean isSending = false;	
+	private int[] curVersion;
+	private Inet4Address clAddr;
 	
-	/**This constructs a Thread that
-	 * handles the client's connections. 
+	/**
+   * This constructs a Thread that handles the client's connections.
 	 * 
 	 * @author Tony Knapp
-	 * @since Alpha (04/29/2014)
-	 * @param Socket, Server
+	 * @param cSoc
+   * @param server
+   * @param parentFolder
+   * @since Alpha
 	 */
-	public HTTPClient(Socket cSoc, HTTPServer server, File parentFolder ) throws IOException {
-		this.controlSoc = cSoc; // attach to client socket
+	public HTTPClient(Socket cSoc, HTTPServer server, File parentFolder) throws IOException {
+		this.controlSoc = cSoc; // Attach to client socket
 		this.controlIn = new BufferedReader(new InputStreamReader(controlSoc.getInputStream()));
 		this.controlOut = new DataOutputStream(controlSoc.getOutputStream());
 		this.server = server;
 		this.parentDir = parentFolder;
-		System.out.println("A new guest has Conncected\rAwaiting Username and Password");
 	}
 	
+  /**
+   * 
+   * 
+   * @author Tony Knapp
+   * @since Alpha
+   */
 	public void run() {
-    int method = 0; //1 get, 2 head, 0 not supported
-    String http = new String(); //a bunch of strings to hold
-    String path = new String(); //the various things, what http v, what path,
-    String file = new String(); //what file
-    String user_agent = new String(); //what user_agent
+    int method = 0; // 1->GET, 2->HEAD, 0->NOT_SUPPORTED
+    String http = new String(); // A bunch of strings to hold
+    String path = new String(); // The various things, what http v, what path,
+    String file = new String(); // What file
+    String user_agent = new String(); // What user_agent
     try {
       //This is the two types of request we can handle
-      //GET /index.html HTTP/1.0
-      //HEAD /index.html HTTP/1.0
+      //GET /index.html HTTP/1.1
+      //HEAD /index.html HTTP/1.1
       String tmp = controlIn.readLine(); //read from the stream
-      String tmp2 = new String(tmp);
       tmp.toUpperCase(); //convert it to uppercase
-      if (tmp.startsWith("GET")) { //compare it is it GET
+      if (tmp.startsWith("GET")) { 
+      	//TODO create GET method
         method = 1;
-      } //if we set it to method 1
-      if (tmp.startsWith("HEAD")) { //same here is it HEAD
+      }
+      if (tmp.startsWith("HEAD")) { 
+      	//TODO create HEAD method
         method = 2;
-      } //set method to 2
+      } 
 
       if (method == 0) { // not supported
         try {
@@ -165,10 +176,13 @@ public class HTTPClient extends Thread {
   }
 	
 	/**
-	 * Description: this method creates the HTTP header for the response
-	 * the header tells the browser what the result of the request
-	 * @author Tony Knapp, Teagan Atwater, Jake Junda
-	 * @since Alpha April 29, 2014 
+	 * Create the HTTP header for the response. The header tells the browser the
+   * result of the request
+   * 
+	 * @author Tony Knapp
+   * @author Teagan Atwater
+   * @author Jake Junda
+	 * @since Alpha
 	 */	
   private String construct_http_header(int return_code, int file_type) {
     String s = "HTTP/1.0 ";
@@ -230,5 +244,4 @@ public class HTTPClient extends Thread {
     //ok return our newly created header!
     return s;
   }
-
 }
