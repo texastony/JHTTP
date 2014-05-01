@@ -67,7 +67,10 @@ public class HTTPClient extends Thread {
 	    else if (this.input.get(0).startsWith("HEAD")) { //if tmp equals HEAD, set to method 2
 	      head();
 //      	controlOut.writeBytes(construct_http_header(501, 0));
-	    } 
+	    }
+	    else if (this.input.get(0).startsWith("HEAD")) { //if tmp equals HEAD, set to method 2
+	    	post();
+	    }
 	    else { // not supported
       	controlOut.writeBytes(construct_http_header(501, 0));
       	controlOut.close();
@@ -80,12 +83,28 @@ public class HTTPClient extends Thread {
     }
 	}
 	
+	//TODO POST
+	private void post() throws IOException {
+    String path = this.input.get(0).substring(3, input.get(0).length()-8); //fill in the path
+    String version = this.input.get(0).substring(2 + path.length()).trim();
+    path = path.trim();
+    if (version.startsWith("HTTP")) {
+    	String[] versionInt = version.substring(5).split("\\.");
+    	if (server.version[0] < Integer.parseInt(versionInt[0])) {
+    		//HTTP version is not supported
+    	}
+    	else if (server.version[0] == Integer.parseInt(versionInt[0]) && server.version[1] < Integer.parseInt(versionInt[1])) {
+    		//HTTP version is not supported
+    	}
+    }
+    
+	}
+	//TODO PUT	
+	
 	private void get() throws IOException {
     String path = this.input.get(0).substring(3, input.get(0).length()-8); //fill in the path
     String version = this.input.get(0).substring(2 + path.length()).trim();
     path = path.trim();
-    System.out.println(this.requestNum + "URI: " + path);
-    System.out.println(this.requestNum + "VER: " + version.substring(5));
     if (version.startsWith("HTTP")) {
     	String[] versionInt = version.substring(5).split("\\.");
     	if (server.version[0] < Integer.parseInt(versionInt[0])) {
@@ -102,7 +121,6 @@ public class HTTPClient extends Thread {
     	path = server.directory.getAbsolutePath() + "/" +  path;
     }
     final File sendFile = new File(path);
-    System.out.println(sendFile.isFile());
     if (!sendFile.isFile()) {
     	controlOut.writeBytes(construct_http_header(404, 0));
     }	
@@ -124,8 +142,8 @@ public class HTTPClient extends Thread {
 	  	FileInputStream requestedFile = new FileInputStream(sendFile);
 	    int b = requestedFile.read();
 	    while (b != -1) {
-	      b = requestedFile.read();
 	      controlOut.write(b);
+	      b = requestedFile.read();
       }
 	    requestedFile.close();
     }
