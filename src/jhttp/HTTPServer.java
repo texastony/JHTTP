@@ -27,9 +27,7 @@ public class HTTPServer extends Thread {
 	private int USER_LIMIT = 100;
 	File directory;
 	int requestCnt = 0;
-	/**
-	 * version: {major, minor}
-	 */
+	// version: {major, minor}
 	int[] version = {1, 1};
 
 	/**
