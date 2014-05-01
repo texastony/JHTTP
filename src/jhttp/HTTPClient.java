@@ -86,25 +86,23 @@ public class HTTPClient extends Thread {
     path = path.trim();
     System.out.println(this.requestNum + "URI: " + path);
     System.out.println(this.requestNum + "VER: " + version.substring(5));
-//    if (version.startsWith("HTTP")) {
-//    	version = "1.1";
-//    	String[] versionInt = version.substring(5).split(".");
-//    	System.out.println("versionInt.length: " + versionInt.length);
-//    	if (server.version[0] < Integer.parseInt(versionInt[0])) {
-//    		//HTTP version is not supported
-//    	}
-//    	else if (server.version[0] == Integer.parseInt(versionInt[0]) && server.version[1] < Integer.parseInt(versionInt[1])) {
-//    		//HTTP version is not supported
-//    	}
-//    }
-    System.out.println(server.directory.getAbsolutePath());
+    if (version.startsWith("HTTP")) {
+    	String[] versionInt = version.substring(5).split("\\.");
+    	if (server.version[0] < Integer.parseInt(versionInt[0])) {
+    		//HTTP version is not supported
+    	}
+    	else if (server.version[0] == Integer.parseInt(versionInt[0]) && server.version[1] < Integer.parseInt(versionInt[1])) {
+    		//HTTP version is not supported
+    	}
+    }
     if (path.equalsIgnoreCase("/")) {
-    	path = server.directory.getAbsolutePath() + "index.html";
+    	path = server.directory.getAbsolutePath() + "/" + "index.html";
     }
     else {
-    	path = server.directory.getAbsolutePath() + path;
+    	path = server.directory.getAbsolutePath() + "/" +  path;
     }
     final File sendFile = new File(path);
+    System.out.println(sendFile.isFile());
     if (!sendFile.isFile()) {
     	controlOut.writeBytes(construct_http_header(404, 0));
     }	

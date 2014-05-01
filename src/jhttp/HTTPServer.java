@@ -79,7 +79,6 @@ public class HTTPServer extends Thread {
 						if (Integer.parseInt(args[i+1]) <= 65535) {
 							portProvided = true;
 							tempPort = Integer.parseInt(args[i+1]);
-							i = i + 2;
 						}
 						else {
 							System.out.println("Bad port argument. Must be between 0 and 65535.");
