@@ -4,6 +4,9 @@
 
 An HTTP server in Java. For a group project in a networks class.
 
+###Start the server:###
+`java -jar JHTTP.jar [-d <directory>] [-p <port number>]`
+
 ###Notes###
 
 Client-server communication:
