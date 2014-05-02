@@ -68,7 +68,6 @@ public class HTTPServer extends Thread {
 		boolean portProvided = false;
 		int tempPort = 80;
 //		String tempDir = "C://"; //Windows
-		//TODO Tatwater, did you test this since you modified it? It's not working for Tony...
 		String tempDir = "/"; //Linux
 		Scanner in = new Scanner(System.in);
 		String text;
@@ -123,7 +122,7 @@ public class HTTPServer extends Thread {
 	 * @since Alpha
 	 */
 	public void run() {
-		System.out.println("Server started on port " + PORT + ".\rType \"QUIT\" to exit.");
+		System.out.println("Server started on port " + PORT + ".\nType \"QUIT\" to exit. \nType \"PORT\" to print the port.");
 		this.running = true;
 		try {
 			while (running) {
@@ -157,7 +156,7 @@ public class HTTPServer extends Thread {
 			while (!client.shutThingsDown(0)); // Wait for the client to shut down before proceeding
 		}
 		out.close();
-		System.out.println("All client sessions have been shut down.\rStopping server.");
+		System.out.println("All client sessions have been shut down. Stopping server.");
 		try {
 			this.join(100); // Let the thread die -> xp 
 		}

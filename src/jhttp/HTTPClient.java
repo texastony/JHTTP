@@ -10,15 +10,15 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Date;
 
-/*
- * Authors: Tony Knapp, Teagan Atwater, Jake Junda
- * Started: April 28, 2014
+/**
  * Project: A simple HTTP server Client
- * Description: This HTTP server Client handles an instance of the each client
+ * This HTTP server Client handles an instance of the each client
  * that connects to the server.  It handles the return codes that let the user
  * know the result of thier commands.  
+ * @author Tony Knapp, Teagan Atwater, Jake Junda
+ * @since April 28, 2014
+ * @version 1.0 (05/01/2014)
  */
-
 public class HTTPClient extends Thread {
 	Socket controlSoc;
 	BufferedReader controlIn;
@@ -34,9 +34,9 @@ public class HTTPClient extends Thread {
 	ArrayList<String> input = new ArrayList<String>();
 
 	
-	/**This constructs a Thread that
-	 * handles the client's connections. 
-	 * 
+	/**
+	 * This constructs a Thread that
+	 * handles the client's connections.
 	 * @author Tony Knapp
 	 * @since Alpha (04/29/2014)
 	 * @param Socket, Server
@@ -52,24 +52,24 @@ public class HTTPClient extends Thread {
 		System.out.println(this.requestNum + "New Request");
 	}
 	
+	/**
+	 * Runs the thread for each request. 
+	 * @author Tony Knapp, Teagan McGillicuddy, The Junda
+	 * @since Alpha April 28, 2014
+	 */
 	public void run() { 
 		try {
 	  	String tmp = controlIn.readLine();
 	  	while (!tmp.isEmpty()){
-	  		System.out.println(this.requestNum + "IN: " + tmp);
+//	  		System.out.println(this.requestNum + "IN: " + tmp);
 	  		this.input.add(tmp);	  		
 				tmp = controlIn.readLine();
   		}
 	    if (this.input.get(0).startsWith("GET")) { //if tmp equals GET, set to method 1
 	      get();
-//      	controlOut.writeBytes(construct_http_header(501, 0));
 	    }
 	    else if (this.input.get(0).startsWith("HEAD")) { //if tmp equals HEAD, set to method 2
 	      head();
-//      	controlOut.writeBytes(construct_http_header(501, 0));
-	    }
-	    else if (this.input.get(0).startsWith("HEAD")) { //if tmp equals HEAD, set to method 2
-	    	post();
 	    }
 	    else { // not supported
       	controlOut.writeBytes(construct_http_header(501, 0));
@@ -81,26 +81,14 @@ public class HTTPClient extends Thread {
 		catch (Exception e3) { //notify user of an error
 			e3.printStackTrace();
     }
-	}
+	}	
 	
-	//TODO POST
-	private void post() throws IOException {
-    String path = this.input.get(0).substring(3, input.get(0).length()-8); //fill in the path
-    String version = this.input.get(0).substring(2 + path.length()).trim();
-    path = path.trim();
-    if (version.startsWith("HTTP")) {
-    	String[] versionInt = version.substring(5).split("\\.");
-    	if (server.version[0] < Integer.parseInt(versionInt[0])) {
-    		//HTTP version is not supported
-    	}
-    	else if (server.version[0] == Integer.parseInt(versionInt[0]) && server.version[1] < Integer.parseInt(versionInt[1])) {
-    		//HTTP version is not supported
-    	}
-    }
-    
-	}
-	//TODO PUT	
-	
+	/**
+	 * Returns the requested file to the user.
+	 * @throws IOException
+	 * @author Tony Knapp, Jake Junda, Teagan Atwater
+	 * @since Beta (04/30/2014)
+	 */
 	private void get() throws IOException {
     String path = this.input.get(0).substring(3, input.get(0).length()-8); //fill in the path
     String version = this.input.get(0).substring(2 + path.length()).trim();
@@ -149,6 +137,11 @@ public class HTTPClient extends Thread {
     }
 	}
 
+	/**
+	 * Simply returns the header to the client, but no file.
+	 * @author Tony Knapp, Jake Junda, Teagan Atwater
+	 * @since Alpha April 28, 2014
+	 */
 	private void head() throws IOException {
     String path = this.input.get(0).substring(2, input.get(0).length()-8).trim(); //fill in the path
     String version = this.input.get(0).substring(2 + path.length()).trim();
@@ -188,69 +181,6 @@ public class HTTPClient extends Thread {
 	  	controlOut.writeBytes(construct_http_header(200, type_is));
     }
 	}
-	
-	
-	//
-//  //retrieve the path to the filename of file to be downloaded
-//  FileInputStream requestedfile = null;
-//
-//  try {
-//    //NOTE that there are several security consideration when passing
-//    //the untrusted string "path" to FileInputStream.
-//    //You can access all files the current user has read access to!!!
-//    //current user is the user running the javaprogram.
-//    //you can do this by passing "../" in the url or specify absoulute path
-//    //or change drive (win)
-//
-//    //open the file
-//    requestedfile = new FileInputStream(path);
-//  }
-//  catch (Exception e) {
-//    try {
-//      //if file open fails send the infamous 404 Not Found
-//      controlOut.writeBytes(construct_http_header(404, 0));
-//      //close the stream
-//      controlOut.close();
-//    }
-//    catch (Exception e2) {}
-//    ;
-//    System.out.println(this.requestNum + "error" + e.getMessage());
-//  }
-//
-//  //happy day scenario
-//  try {
-//    int type_is = 0;
-//    //find out what the filename ends with,
-//    //so you can construct a the right content type
-//    if (path.endsWith(".zip")) {
-//      type_is = 3;
-//    }
-//    if (path.endsWith(".jpg") || path.endsWith(".jpeg")) {
-//      type_is = 1;
-//    }
-//    if (path.endsWith(".gif")) {
-//      type_is = 2;
-//    }
-//    controlOut.writeBytes(construct_http_header(200, 5)); //it checks out, send 200 OK
-//
-//    //if it was a HEAD request, we don't print any BODY
-//    if (method == 1) { //1 is GET 2 is head and skips the body
-//      while (true) {
-//        //read the file from filestream, and print out through the
-//        //client-outputstream on a byte per byte basis.
-//        int b = requestedfile.read();
-//        if (b == -1) {
-//          break; //end of file
-//        }
-//        controlOut.write(b);
-//      }
-//      
-//	    }
-//	    //clean up the files, close open handles
-//	    requestedfile.close();
-//	    shutThingsDown(0);
-//  	}
-//	}
   
   
 	boolean shutThingsDown(int errorCode) throws IOException{
@@ -295,20 +225,11 @@ public class HTTPClient extends Thread {
     s = s + "Connection: close\r\n"; //we can't handle persistent connections
     s = s + "Server: SimpleHTTPtutorial v0\r\n"; //server name
 
-    //Construct the right Content-Type for the header.
-    //This is so the browser knows what to do with the
-    //file, you may know the browser dosen't look on the file
-    //extension, it is the servers job to let the browser know
-    //what kind of file is being transmitted. You may have experienced
-    //if the server is miss configured it may result in
-    //pictures displayed as text!
-    
 	/**
 	 * this switch statement lets the browser know
 	 * what kind of file is being sent
 	 */	
     switch (file_type) {
-      //WE CAN EITHER FILL IN A BUNCH MORE FILE TYPES OR DO IT PETER'S "LET THE BROWSER HANDLE IT" WAY
       case 0:
         break;
       case 1:
@@ -325,7 +246,7 @@ public class HTTPClient extends Thread {
 
     s = s + "\r\n"; //this marks the end of the httpheader
     //and the start of the body
-    System.out.println(this.requestNum + "OUT: "+ s);
+//    System.out.println(this.requestNum + "OUT: "+ s);
     return s;//return the header
   }
 
