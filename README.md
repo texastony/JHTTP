@@ -1,13 +1,13 @@
-#JHTTP#
+# JHTTP
 
-###Project Brief###
+### Project Brief
 
 An HTTP server in Java. For a group project in a networks class.
 
-###Start the server:###
+### Start the server:
 `java -jar JHTTP.jar [-d <directory>] [-p <port number>]`
 
-###Notes###
+### Notes
 
 Client-server communication:
 
